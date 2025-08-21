@@ -39,3 +39,67 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+# General
+# ----------------------------------------------------------------
+# OS-generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE / Editor specific files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Dependency directories
+# ----------------------------------------------------------------
+# Node.js dependencies
+node_modules/
+
+# Rust/Cargo build artifacts and dependencies
+src-tauri/target/
+src-tauri/gen/
+
+# Build & Output directories
+# ----------------------------------------------------------------
+# Next.js build output
+.next/
+out/
+
+# Tauri build output (for bundles/installers)
+src-tauri/target/release/bundle/
+
+# Log files
+# ----------------------------------------------------------------
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment variables
+# ----------------------------------------------------------------
+# Never commit environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Tauri-specific
+# ----------------------------------------------------------------
+# Ignore generated icons unless you want to commit them
+src-tauri/icons/
+
+# If you are using tauri-plugin-sql, you might want to ignore the database file
+*.db
+*.db-journal
+
+

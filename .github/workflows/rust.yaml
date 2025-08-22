@@ -1,12 +1,14 @@
+# .github/workflows/rust.yml
+
 # A descriptive name for your workflow
 name: Rust CI
 
 # 1. TRIGGER: This workflow runs on every push to the 'develop' branch
 on:
   push:
-    branches: ["develop"]
+    branches: [ "develop" ]
   pull_request:
-    branches: ["develop"]
+    branches: [ "develop" ]
 
 # 2. JOBS: A list of jobs to run. We only have one job for now.
 jobs:
@@ -15,13 +17,25 @@ jobs:
     # The type of virtual machine to run the job on
     runs-on: ubuntu-latest
 
-# 3. STEPS: A list of steps to run in the job
+    # 3. STEPS: The sequence of tasks that make up the job
     steps:
       # Step 1: Checks out your repository's code so the job can access it
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Set up a cache for Cargo dependencies to speed up future runs
+      # --- FIX: ADDED THIS STEP ---
+      # Step 2: Install Tauri's system dependencies for Linux
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.0-dev \
+              build-essential \
+              pkg-config \
+              librsvg2-dev \
+              libgtk-3-dev \
+              libappindicator3-dev
+
+      # Step 3: Set up a cache for Cargo dependencies to speed up future runs
       - name: Cache Cargo dependencies
         uses: actions/cache@v4
         with:
@@ -29,15 +43,14 @@ jobs:
             ~/.cargo/bin/
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
-            ~/.cargo/git/db
-            src-tauri/target
+            ~/.cargo/git/db/
+            src-tauri/target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-        
-      # Step 3: Run 'cargo check' to quickly ensure the code compiles
-      - name: Run cargo check
+
+      # Step 4: Run 'cargo check' to quickly ensure the code compiles
+      - name: Run Cargo Check
         run: cd src-tauri && cargo check --verbose
-      
-      # Step 4: Run the tests for your Rust code
-      - name: Run tests
+
+      # Step 5: Run the tests for your Rust code
+      - name: Run Cargo Test
         run: cd src-tauri && cargo test --verbose
-  

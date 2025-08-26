@@ -5,7 +5,6 @@ diesel::table! {
         id -> Integer,
         name -> Text,
         email -> Text,
-        phone -> Text,
         position -> Text,
         created_at -> Timestamp,
     }

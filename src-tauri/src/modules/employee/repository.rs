@@ -1,10 +1,13 @@
+// The repository pattern encapsulates all database logic for a given model.
+// All functions here interact directly with the database.
 use crate::core::db::DbPool;
-use crate::core::error::{AppError, AppResult};
+use crate::core::errors::{AppError, AppResult};
 use crate::modules::employee::models::{Employee, NewEmployee, UpdateEmployee};
 use crate::schema::employees::dsl::*;
 use diesel::prelude::*;
 
-/// Create a new employee in the database
+/// Creates a new employee in the database.
+
 pub fn create_employee(pool: &DbPool, new_employee: NewEmployee) -> AppResult<Employee> {
     // Get a connection from the pool
     let mut conn = pool.get()?;
@@ -17,11 +20,20 @@ pub fn create_employee(pool: &DbPool, new_employee: NewEmployee) -> AppResult<Em
         return Err(AppError::Validation("A valid email is required.".to_string()));
     }
 
-    // Insert the employee into the 'employees' table and return the created record.
-    let employee = diesel::insert_into(employee)
-        .values(&new_employee)
-        .get_result(&mut conn)?;
-    Ok(employee)
+    // Start a transaction to ensure atomicity
+    conn.transaction(|conn| {
+        // Insert the new employee into the 'employees' table
+        diesel::insert_into(employees)
+            .values(&new_employee)
+            .execute(conn)?;
+
+        // Fetch the last inserted employee (assuming `id` is auto-incremented)
+        let employee = employees
+            .order(id.desc())
+            .first::<Employee>(conn)?;
+        
+        Ok(employee)
+    })
 }
 
 /// Fetches all employees from the database.
@@ -34,22 +46,35 @@ pub fn get_all_employees(pool: &DbPool) -> AppResult<Vec<Employee>> {
 /// Fetches a single employee by their ID.
 pub fn get_employee_by_id(pool: &DbPool, employee_id: i32) -> AppResult<Employee> {
     let mut conn = pool.get()?;
-    let results = employees.select(Employee::as_select()).load(&mut conn)?;
-    Ok(results)
-}
-
-// Updates an existing employee's data in the database.
-pub fn update_employee(pool: &DbPool, employee_id: i32, update_data: UpdateEmployee) -> AppResult<Employee> {
-    let mut conn = pool.get()?;
-    let employee = diesel::update(employees.find(employee_id))
-        .set(&update_data)
-        .get_result(&mut conn)?;
+    let employee = employees.find(employee_id).first(&mut conn)?;
     Ok(employee)
 }
 
-// Deletes an employee from the database.
+/// Updates an existing employee's data in the database.
+pub fn update_employee(pool: &DbPool, employee_id: i32, updated_data: UpdateEmployee) -> AppResult<Employee> {
+    let mut conn = pool.get()?;
+
+    // Start a transaction to ensure atomicity
+    conn.transaction(|conn| {
+        // Update the employee in the 'employees' table
+        diesel::update(employees.find(employee_id))
+            .set(&updated_data)
+            .execute(conn)?;
+
+        // Fetch the updated employee
+        let employee = employees
+            .find(employee_id)
+            .first::<Employee>(conn)?;
+        
+        Ok(employee)
+    })
+}
+
+/// Deletes an employee from the database by their ID.
 pub fn delete_employee(pool: &DbPool, employee_id: i32) -> AppResult<usize> {
     let mut conn = pool.get()?;
+    // `diesel::delete` returns the number of rows deleted.
     let num_deleted = diesel::delete(employees.find(employee_id)).execute(&mut conn)?;
     Ok(num_deleted)
 }
+

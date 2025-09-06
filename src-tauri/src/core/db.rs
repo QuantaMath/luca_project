@@ -1,3 +1,5 @@
+// src-tauri/src/core/db.rs
+
 use diesel::r2d2::{self, ConnectionManager};
 use diesel::sqlite::SqliteConnection;
 use std::env;

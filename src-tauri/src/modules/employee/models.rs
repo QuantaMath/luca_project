@@ -1,8 +1,9 @@
+// This file defines the data structures for our 'employees' table.
 use crate::schema::employees;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 
-/// Represents and employee record fetched from the database.
+/// Represents an employee record fetched from the database.
 /// It is serializable to be sent to the frontend.
 #[derive(Queryable, Selectable, Serialize, Clone, Debug)]
 #[diesel(table_name = employees)]
@@ -12,14 +13,14 @@ pub struct Employee {
     pub name: String,
     pub email: String,
     pub position: String,
-    // Note SQLite doesn't have anative datetime type, so Diesel maps
+    // Note: SQLite doesn't have a native datetime type, so Diesel maps
     // TIMESTAMP to String by default.
     pub created_at: String,
 }
 
-/// Reperesents a new employee to be inserted into the database.
+/// Represents a new employee to be inserted into the database.
 /// It is deserializable to receive data from the frontend.
-#[derive(Inserable, Deserialize)]
+#[derive(Insertable, Deserialize)]
 #[diesel(table_name = employees)]
 pub struct NewEmployee {
     pub name: String,
@@ -32,8 +33,7 @@ pub struct NewEmployee {
 #[derive(AsChangeset, Deserialize)]
 #[diesel(table_name = employees)]
 pub struct UpdateEmployee {
-    pub name: String,
-    pub email: String,
-    pub position: String,
+    pub name: Option<String>,
+    pub email: Option<String>,
+    pub position: Option<String>,
 }
-

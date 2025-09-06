@@ -1,5 +1,5 @@
 [package]
-name = "app"
+name = "luca_project"
 version = "0.1.0"
 description = "A Tauri App"
 authors = ["you"]
@@ -10,8 +10,10 @@ rust-version = "1.77.2"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+# [lib]
+# name = "luca_project_lib"
 [lib]
-name = "app_lib"
+path = "src/lib.rs" # Explicitly define the library crate
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
@@ -20,7 +22,7 @@ tauri-build = { version = "2.4.0", features = [] }
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-thiserror = "1.0"
+thiserror = "2.0.16"
 diesel = { version = "2.1.0", features = ["sqlite", "r2d2"] }
 diesel_migrations = "2.1.0"
 r2d2 = "0.8.10"

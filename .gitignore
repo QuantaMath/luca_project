@@ -102,4 +102,4 @@ src-tauri/icons/
 *.db
 *.db-journal
 sqlite.db
-
+pnpm-lock.yaml

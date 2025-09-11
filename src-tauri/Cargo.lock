@@ -1909,7 +1909,8 @@ dependencies = [
  "tauri",
  "tauri-build",
  "tauri-plugin-log",
- "thiserror 2.0.16",
+ "thiserror 1.0.69",
+ "uuid",
 ]
 
 [[package]]

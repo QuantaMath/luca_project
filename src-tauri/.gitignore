@@ -3,4 +3,3 @@
 /target/
 /gen/schemas
 sqlite.db
-pnpm-lock.yaml

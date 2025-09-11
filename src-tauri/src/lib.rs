@@ -1,21 +1,25 @@
 pub mod core;
 pub mod modules;
 pub mod schema;
+pub mod api;
 
-#[cfg_attr(mobile, tauri::mobile_entry_point)]
+use crate::core::event_bus::EventBus;
+use crate::modules::employee::repository::EmployeeRepository;
+use tauri::Manager;
+
+// This function contains the application setup logic.
 pub fn run() {
-  tauri::Builder::default()
-    .setup(|app| {
-      if cfg!(debug_assertions) {
-        app.handle().plugin(
-          tauri_plugin_log::Builder::default()
-            .level(log::LevelFilter::Info)
-            .build(),
-        )?;
-      }
-      Ok(())
-    })
-    .run(tauri::generate_context!())
-    .expect("error while running tauri application");
-}
+    let db_pool = core::db::establish_connection();
 
+    tauri::Builder::default()
+        .manage(db_pool)
+        .setup(|app| {
+            // Manage concrete types
+            app.manage(EventBus::new(app.handle().clone()));
+            app.manage(EmployeeRepository);
+            Ok(())
+        })
+        .invoke_handler(api::get_handlers())
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
+}

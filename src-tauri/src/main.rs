@@ -4,6 +4,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use tauri::Manager;
+use crate::modules::payroll::listeners::setup_payroll_listeners;
 
 mod core;
 mod modules;
@@ -18,6 +19,10 @@ fn main() {
         .setup(|app| {
             let event_bus = core::event_bus::EventBus::new(app.handle().clone());
             app.manage(event_bus);
+
+            // Start the payroll event listener in the background (Newly Added)
+            setup_payroll_listeners(app.handle());
+
             Ok(())
         })
         .invoke_handler(api::get_handlers())

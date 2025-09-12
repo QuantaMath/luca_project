@@ -1,4 +1,3 @@
-// --- File: src-tauri/src/lib.rs (Corrected) ---
 pub mod core;
 pub mod modules;
 pub mod schema;
@@ -7,19 +6,22 @@ pub mod api;
 use tauri::Manager;
 use crate::core::event_bus::EventBus;
 use crate::modules::employee::repository::EmployeeRepository;
+use crate::modules::payroll::listeners::setup_payroll_listeners;
 
-// Main application entry point
+// This function contains the application setup logic.
 pub fn run() {
     let db_pool = core::db::establish_connection();
 
     tauri::Builder::default()
-        // 1. Manage all states that DON'T require the app handle here,
-        // before the invoke_handler is registered.
         .manage(db_pool)
-        .manage(EmployeeRepository) // <-- FIX: Moved this line up
         .setup(|app| {
-            // 2. Only manage states that DO require the app handle here.
+            // Manage concrete types
             app.manage(EventBus::new(app.handle().clone()));
+            app.manage(EmployeeRepository);
+
+            // Start the payroll event listener in the background
+            setup_payroll_listeners(app.handle());
+
             Ok(())
         })
         .invoke_handler(api::get_handlers())
@@ -28,6 +30,7 @@ pub fn run() {
 }
 
 // A public module for test utilities, visible to integration tests.
+// This has been updated to use the robust TestDbGuard pattern.
 pub mod test_utils {
     use crate::core::db::DbPool;
     use diesel::r2d2::{self, ConnectionManager};
@@ -79,3 +82,4 @@ pub mod test_utils {
         }
     }
 }
+

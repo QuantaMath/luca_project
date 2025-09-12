@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 /// Represents an employee record fetched from the database.
 /// It is serializable to be sent to the frontend.
-#[derive(Queryable, Selectable, Serialize, Clone, Debug)]
+#[derive(Queryable, Selectable, Serialize, Deserialize, Clone, Debug)]
 #[diesel(table_name = employees)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Employee {

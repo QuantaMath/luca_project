@@ -1,4 +1,4 @@
-// --- File: src-tauri/src/lib.rs (Refactored for Isolated Testing) ---
+// --- File: src-tauri/src/lib.rs (Corrected) ---
 pub mod core;
 pub mod modules;
 pub mod schema;
@@ -13,10 +13,13 @@ pub fn run() {
     let db_pool = core::db::establish_connection();
 
     tauri::Builder::default()
+        // 1. Manage all states that DON'T require the app handle here,
+        // before the invoke_handler is registered.
         .manage(db_pool)
+        .manage(EmployeeRepository) // <-- FIX: Moved this line up
         .setup(|app| {
+            // 2. Only manage states that DO require the app handle here.
             app.manage(EventBus::new(app.handle().clone()));
-            app.manage(EmployeeRepository);
             Ok(())
         })
         .invoke_handler(api::get_handlers())

@@ -3,6 +3,8 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use tauri::Manager;
+
 mod core;
 mod modules;
 mod schema;
@@ -13,8 +15,12 @@ fn main() {
 
     tauri::Builder::default()
         .manage(db_pool)
-        // 2. Replace the empty handler with our new function
-        .invoke_handler(api::get_handlers()) 
+        .setup(|app| {
+            let event_bus = core::event_bus::EventBus::new(app.handle().clone());
+            app.manage(event_bus);
+            Ok(())
+        })
+        .invoke_handler(api::get_handlers())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

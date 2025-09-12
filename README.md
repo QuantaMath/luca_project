@@ -43,8 +43,11 @@ Follow these instructions to get a local copy of the project up and running for 
 
 ### Prerequisites
 
-1.  **System Dependencies:** Follow the official [Tauri v2 prerequisites guide](https://www.google.com/search?q=https://tauri.app/v2/guides/getting-started/prerequisites) for your operating system.
-2.  **Node.js:** Ensure you have Node.js (LTS version recommended) and `npm` installed.
+1.  **System Dependencies:** Follow the official [Tauri v2 prerequisites guide](https://tauri.app/v2/guides/getting-started/prerequisites) for your operating system.
+2.  **Node.js & pnpm:** Ensure you have Node.js (LTS version recommended). We use `pnpm` as the package manager. If you don't have it, install it globally:
+    ```
+    npm install -g pnpm
+    ```
 3.  **Diesel CLI:** Install the command-line tool for interacting with the database:
     ```
     cargo install diesel_cli --no-default-features --features sqlite
@@ -59,7 +62,7 @@ Follow these instructions to get a local copy of the project up and running for 
     ```
 2.  **Install frontend dependencies:**
     ```
-    npm install
+    pnpm install
     ```
 3.  **Set up the database:**
     * Navigate to the backend directory: `cd src-tauri`
@@ -69,7 +72,7 @@ Follow these instructions to get a local copy of the project up and running for 
     * Navigate back to the root directory: `cd ..`
 4.  **Run the application in development mode:**
     ```
-    npm run tauri dev
+    pnpm tauri dev
     ```
 
 ## 🧪 Running Tests
@@ -79,3 +82,26 @@ The project has two sets of tests: backend integration tests for Rust and fronte
 ### Backend Tests (Rust / Diesel)
 
 These tests validate the database logic in the repositories. Because they use an in-memory database, they must be run serially to prevent race conditions.
+
+### Navigate to the backend directory
+```
+cd src-tauri
+```
+### Run the tests with a single thread
+```
+cargo test -- --test-threads=1
+```
+
+### Frontend Tests (Cypress E2E)
+
+These tests simulate user interactions in the live application.
+
+1.  **Start the development server** in one terminal:
+    ```
+    pnpm tauri dev
+    ```
+2.  **Wait for the app to launch**, then open a **second terminal**.
+3.  **Run Cypress:**
+    ```
+    pnpm cypress open
+    ```

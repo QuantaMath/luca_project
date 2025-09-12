@@ -1,36 +1,12 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+ERP Luca ProjectA modern, cross-platform desktop Enterprise Resource Planning (ERP) system built with Rust, Tauri, and a React/Next.js frontend. This application is designed to be robust, secure, and scalable, starting with a modular architecture that is ready for future growth.✨ Core FeaturesThe application is designed to manage the entire business lifecycle through a series of integrated modules:✅ Employee Management: A single source of truth for all employee information.✅ Payroll Management: Manage salaries and financial information for each employee.📝 Time and Attendance Management: (Planned for Sprint 5 & 6) Track work hours and manage leave requests.📝 Performance Management: (Future Sprint) Set goals, conduct reviews, and manage employee performance.📝 Reporting and Analytics: (Future Sprint) Gain insights from your business data through dashboards and reports.🏛️ Architectural OverviewThis project is built using a Modular Monolithic architecture. This approach provides the simplicity of a single, deployable application while enforcing the strict boundaries and separation of concerns found in microservices.Modules: The backend is divided into independent modules based on business domains (employee, payroll, attendance, inventory, etc.).Decoupling: Modules do not communicate directly. Instead, they use an event-driven approach. For example, when the employee module creates a new employee, it publishes an EmployeeCreatedEvent. The payroll module listens for this event and automatically creates a default payroll profile, without the two modules ever knowing about each other's internal code.Scalability: This architecture makes it straightforward to extract a module into its own microservice in the future if the need arises, with minimal changes to the rest of the application.🛠️ Tech StackBackend (src-tauri)Framework: Tauri (v2)Language: RustDatabase: SQLiteORM & Migrations: DieselState Management: Tauri Managed StateFrontend (src)Framework: Next.js (React)Language: TypeScriptStyling: Tailwind CSSUI Components: Headless UI principles🚀 Getting StartedFollow these instructions to get a local copy of the project up and running for development.PrerequisitesSystem Dependencies: Follow the official Tauri v2 prerequisites guide for your operating system.Node.js: Ensure you have Node.js (LTS version recommended) and npm installed.Diesel CLI: Install the command-line tool for interacting with the database:cargo install diesel_cli --no-default-features --features sqlite
+Installation & SetupClone the repository:git clone <your-repository-url>
+cd luca_project
+Install frontend dependencies:npm install
+Set up the database:Navigate to the backend directory: cd src-tauriRun the Diesel setup command (only needs to be done once): diesel setupRun all pending database migrations to create the tables: diesel migration runGenerate the schema.rs file so Rust can see your tables: diesel print-schema > src/schema.rsNavigate back to the root directory: cd ..Run the application in development mode:npm run tauri dev
+🧪 Running TestsThe project has two sets of tests: backend integration tests for Rust and frontend end-to-end tests with Cypress.Backend Tests (Rust / Diesel)These tests validate the database logic in the repositories. Because they use an in-memory database, they must be run serially to prevent race conditions.# Navigate to the backend directory
+cd src-tauri
 
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Run the tests with a single thread
+cargo test -- --test-threads=1
+Frontend Tests (Cypress E2E)These tests simulate user interactions in the live application.Start the development server in one terminal:npm run tauri dev
+Wait for the app to launch, then open a second terminal.Run Cypress:npx cypress open

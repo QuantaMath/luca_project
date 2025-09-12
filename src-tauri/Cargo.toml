@@ -1,5 +1,5 @@
 [package]
-name = "app"
+name = "luca_project"
 version = "0.1.0"
 description = "A Tauri App"
 authors = ["you"]
@@ -11,7 +11,10 @@ rust-version = "1.77.2"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-name = "app_lib"
+# This explicitly names our library `luca_project`.
+# The integration tests will use this name in their `use` statements.
+name = "luca_project"
+path = "src/lib.rs"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
@@ -20,6 +23,13 @@ tauri-build = { version = "2.4.0", features = [] }
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
+thiserror = "2.0.16" 
+diesel = { version = "2.1.0", features = ["sqlite", "r2d2"] }
+diesel_migrations = "2.1.0"
+r2d2 = "0.8.10"
 log = "0.4"
 tauri = { version = "2.8.2", features = [] }
 tauri-plugin-log = "2"
+
+# FIX: Add the uuid crate for generating unique filenames for test databases.
+uuid = { version = "1.18.1", features = ["v4"] }

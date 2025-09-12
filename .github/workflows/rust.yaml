@@ -1,0 +1,58 @@
+# .github/workflows/rust.yml
+
+# A descriptive name for your workflow
+name: Rust CI
+
+# 1. TRIGGER: This workflow runs on every push to the 'develop' branch
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+# 2. JOBS: A list of jobs to run. We only have one job for now.
+jobs:
+  # The name of our job
+  check-and-test:
+    # The type of virtual machine to run the job on
+    runs-on: ubuntu-latest
+
+    # 3. STEPS: The sequence of tasks that make up the job
+    steps:
+      # Step 1: Checks out your repository's code so the job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # --- FIX v2: Using the official, updated dependency list for Tauri v2 ---
+      # Step 2: Install Tauri's system dependencies for Linux
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            build-essential \
+            pkg-config \
+            librsvg2-dev \
+            libgtk-3-dev \
+            libappindicator3-dev \
+            patchelf
+
+      # Step 3: Set up a cache for Cargo dependencies to speed up future runs
+      - name: Cache Cargo dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            src-tauri/target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      # Step 4: Run 'cargo check' to quickly ensure the code compiles
+      - name: Run Cargo Check
+        run: cd src-tauri && cargo check --verbose
+
+      # Step 5: Run the tests for your Rust code
+      - name: Run Cargo Test
+        run: cd src-tauri && cargo test --verbose

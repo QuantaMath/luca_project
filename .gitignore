@@ -101,5 +101,5 @@ src-tauri/icons/
 # If you are using tauri-plugin-sql, you might want to ignore the database file
 *.db
 *.db-journal
-
-
+sqlite.db
+pnpm-lock.yaml

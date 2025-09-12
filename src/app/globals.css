@@ -1,26 +1,14 @@
+/*
+  Base styles for the application using Tailwind CSS v4.
+*/
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/*
+  Define some base styles for the body to ensure a consistent look.
+*/
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-800;
+    font-family: 'Inter', sans-serif;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }

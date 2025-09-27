@@ -14,7 +14,7 @@ use crate::modules::payroll::{
 use tauri::State;
 
 #[tauri::command]
-pub async fn get_payroll_profile(
+pub fn get_payroll_profile(
     pool: State<'_, DbPool>,
     employee_id: i32,
 
@@ -25,7 +25,7 @@ pub async fn get_payroll_profile(
 }
 
 #[tauri::command]
-pub async fn update_payroll_profile(
+pub fn update_payroll_profile(
     pool: State<'_, DbPool>,
     empolyee_id: i32,
     profile_update_data: UpdatePayrollProfile,

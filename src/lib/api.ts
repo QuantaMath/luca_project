@@ -2,11 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 
 // --- TypeScript Interfaces ---
 
-// --- TypeScript Interfaces ---
-// These interfaces must match the Rust structs defined in `src-tauro/src/modules/employee/models.rs`.
-// This is ensure type safety across the frontend-backend boundary.
-
-
+// Employee-related interfaces (existing)
 export interface Employee {
     id: number;
     name: string;
@@ -27,34 +23,47 @@ export interface UpdateEmployee {
     position?: string;
 }
 
+// Payroll-related interfaces (new)
+export interface PayrollProfile {
+    id: number;
+    employee_id: number;
+    salary: number;
+    bank_info: string | null;
+}
+
+export interface UpdatePayrollProfile {
+    salary?: number;
+    bank_info?: string | null;
+}
+
 // --- Generic Invoke Helper ---
 // A helper function to reduce boilerplate and handle errors consistently.
 
 /**
-* Invokes a Tauri command and the Result<T, E> pattern from Rust.
-* @param cmd The command to invoke.
-* @param args The arguments for the command.
-* @returns A promise that resolves with the data if the Rust command returns Ok(T),
-* or rejects with an error message if the Rust command returns Err(E)
-*/
+ * Invokes a Tauri command and handles the Result<T, E> pattern from Rust.
+ * @param cmd The command to invoke.
+ * @param args The arguments for the command.
+ * @returns A promise that resolves with the data if the Rust command returns Ok(T),
+ * or rejects with an error message if the Rust command returns Err(E)
+ */
 async function invokeWrapper<T>(cmd: string, args?: Record<string, unknown>): Promise<T> {
     try {
         const result = await invoke<T>(cmd, args);
         return result;
     } catch (error) {
-        // The `error` will be the straingfied version of out AppError from Rust.
+        // The `error` will be the stringified version of our AppError from Rust.
         console.error(`Error invoking ${cmd}:`, error);
-        // We re-throw it as a standard Javascript Error.
+        // We re-throw it as a standard JavaScript Error.
         throw new Error(error as string);
     }
 }
 
-// --- API Funvtions ---
-//These  are the functions our React components will use to interact with the backend.
+// --- Employee API Functions ---
+// These are the functions our React components will use to interact with the backend.
 
 /** 
  * Fetch the list of all employees from the database.
- * Corresponds to the `list_employees`` command in Rust.
+ * Corresponds to the `list_employees` command in Rust.
  */
 export const listEmployees = (): Promise<Employee[]> => {
     return invokeWrapper("list_employees");
@@ -76,7 +85,7 @@ export const addEmployee = (employeeData: NewEmployee): Promise<Employee> => {
  * @param employeeData The new data for the employee.
  */
 export const updateEmployee = (employeeId: number, employeeData: UpdateEmployee): Promise<Employee> => {
-  return invokeWrapper("update_employee", { employeeId, employeeData });
+    return invokeWrapper("update_employee", { employeeId, employeeData });
 };
 
 /**
@@ -86,5 +95,31 @@ export const updateEmployee = (employeeId: number, employeeData: UpdateEmployee)
  * @returns The number of rows deleted (should be 1).
  */
 export const deleteEmployee = (employeeId: number): Promise<number> => {
-  return invokeWrapper("delete_employee", { employeeId });
+    return invokeWrapper("delete_employee", { employeeId });
+};
+
+// --- Payroll API Functions (NEW) ---
+
+/**
+ * Fetches the payroll profile for a specific employee.
+ * Corresponds to the `get_payroll_profile` command in Rust.
+ * @param employeeId The ID of the employee whose payroll profile to fetch.
+ * @returns A promise that resolves to the employee's payroll profile.
+ */
+export const getPayrollProfile = (employeeId: number): Promise<PayrollProfile> => {
+    return invokeWrapper("get_payroll_profile", { employeeId });
+};
+
+/**
+ * Updates the payroll profile for a specific employee.
+ * Corresponds to the `update_payroll_profile` command in Rust.
+ * @param employeeId The ID of the employee whose payroll profile to update.
+ * @param data The updated payroll data (salary and/or bank_info).
+ * @returns A promise that resolves to the updated payroll profile.
+ */
+export const updatePayrollProfile = (employeeId: number, data: UpdatePayrollProfile): Promise<PayrollProfile> => {
+    return invokeWrapper("update_payroll_profile", { 
+        empolyeeId: employeeId, // Matching the typo: empolyee_id → empolyeeId
+        profileUpdateData: data  // Matching: profile_update_data → profileUpdateData
+    });
 };
